@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 - 祥盛中西禮餅</title>
+    <link rel="stylesheet" href="/stylesheets/log.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">祥盛中西禮餅</div>
+            <ul>
+                <li><a href="/">首頁</a></li>
+
+                <li><a href="index.html#cakes">蛋糕目錄</a></li>
+                <li><a href="index.html#contact">聯絡我們</a></li>
+                <li><a href="/login">登入</a></li>
+                <li><a href="/register">註冊</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>會員登入</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">電子郵件：</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼：</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">登入</button>
+            </form>
+            <p class="form-footer">
+                還沒有帳號？<a href="/register">立即註冊</a>
+            </p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 祥盛中西禮餅. 版權所有.</p>
+    </footer>
+
+    <script src="javascript/login.js"></script>
+</body>
+</html>
