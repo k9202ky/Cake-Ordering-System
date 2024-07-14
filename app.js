@@ -9,14 +9,6 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-// Mongoose 連接
-mongoose.connect('mongodb+srv://k9202ky:k200891359d@cluster0.2pgtsea.mongodb.net/?tls=true')
-  .then(() => console.log('MongoDB connected...'))
-  .catch(err => console.log(err));
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
 // 設置視圖引擎
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -47,5 +39,29 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// 連接數據庫並啟動服務器
+const connectDBAndStartServer = async () => {
+  try {
+    await mongoose.connect('mongodb+srv://k9202ky:k200891359d@cluster0.2pgtsea.mongodb.net/?tls=true', {
+    });
+    console.log('MongoDB connected successfully');
+
+    // 測試數據庫連接
+    await mongoose.connection.db.admin().ping();
+    console.log('Database connection is responsive');
+
+    // 啟動服務器
+    const port = process.env.PORT || 3001; // 使用 3001 或其他可用端口
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to connect to MongoDB or start server:', error);
+    process.exit(1);
+  }
+};
+
+connectDBAndStartServer();
 
 module.exports = app;

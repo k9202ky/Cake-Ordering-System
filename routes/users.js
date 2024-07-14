@@ -9,27 +9,32 @@ router.get('/', function(req, res, next) {
 });
 
 // 添加登錄路由
-router.post('/login', async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
-      const { email, password } = req.body;
-      
-      // 查找用戶
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(400).json({ message: '用戶不存在' });
-      }
+    const { username, email, phone, password } = req.body;
+    
+    // 將 email 轉換為小寫
+    const lowerCaseEmail = email.toLowerCase();
 
-      // 驗證密碼
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-          return res.status(400).json({ message: '密碼錯誤' });
-      }
+    // 檢查 email 是否已存在
+    const existingUser = await User.findOne({ email: lowerCaseEmail });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: '該電子郵件已被註冊' });
+    }
 
-      // 登入成功
-      res.status(200).json({ message: '登入成功', user: { id: user._id, username: user.username, email: user.email } });
+    // 創建新用戶
+    const newUser = new User({
+      username,
+      email: lowerCaseEmail,
+      phone,
+      password: await bcrypt.hash(password, 10)
+    });
+
+    await newUser.save();
+    res.status(201).json({ success: true, message: '用戶註冊成功' });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: '伺服器錯誤' });
+    console.error('註冊錯誤:', error);
+    res.status(500).json({ success: false, message: '註冊過程中發生錯誤', error: error.message });
   }
 });
 
