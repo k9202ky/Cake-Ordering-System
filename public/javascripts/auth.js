@@ -22,9 +22,19 @@ function logout() {
     return fetch('/logout', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('username');
-            return data;
+            if (data.success) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                showNotification(data.message);
+                setTimeout(() => {
+                    window.location.href = '/'; // 重定向到首頁
+                }, 2000); // 2秒後重定向
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            showNotification('登出過程中發生錯誤：' + error.message, 'error');
         });
 }
 
@@ -46,6 +56,32 @@ function checkLoginStatus() {
     });
 }
 
+// 顯示通知的函數
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    document.body.appendChild(notification);
+
+    // 設置樣式
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        padding: '10px 20px',
+        backgroundColor: type === 'success' ? '#4CAF50' : '#f44336',
+        color: 'white',
+        borderRadius: '5px',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+        zIndex: '1000'
+    });
+
+    // 3秒後自動移除通知
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
 // 更新導航欄（登入狀態）
 function updateNavbar(username) {
     const navUl = document.querySelector('nav ul');
@@ -59,9 +95,7 @@ function updateNavbar(username) {
 
     document.getElementById('logoutBtn').addEventListener('click', function(e) {
         e.preventDefault();
-        logout().then(() => {
-            window.location.reload();
-        });
+        logout();
     });
 }
 
