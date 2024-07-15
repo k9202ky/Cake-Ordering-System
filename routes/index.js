@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -59,27 +60,52 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-      return res.json({ success: false, message: '請輸入電子郵件和密碼' });
-  }
-
   try {
       const user = await User.findOne({ email: email.toLowerCase() });
-      if (!user) {
-          return res.json({ success: false, message: '用戶不存在' });
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+          return res.status(401).json({ success: false, message: '電子郵件或密碼錯誤' });
       }
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-          return res.json({ success: false, message: '密碼錯誤' });
-      }
+      // 創建 JWT
+      const token = jwt.sign(
+          { userId: user._id, username: user.username },
+          'your_jwt_secret',
+          { expiresIn: '24h' }
+      );
 
-      // Here you would typically create a session or JWT token
-      // For simplicity, we're just sending a success message
-      res.json({ success: true, message: '登入成功' });
+      // 設置 session
+      req.session.userId = user._id;
+
+      res.json({ 
+          success: true, 
+          message: '登入成功', 
+          username: user.username,
+          token: token
+      });
   } catch (error) {
       console.error('Login error:', error);
-      res.json({ success: false, message: '登入過程中發生錯誤，請稍後再試' });
+      res.status(500).json({ success: false, message: '登入過程中發生錯誤，請稍後再試' });
+  }
+});
+
+// 登出路由
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+      if (err) {
+          return res.status(500).json({ success: false, message: '登出失敗' });
+      }
+      res.clearCookie('connect.sid');
+      res.json({ success: true, message: '成功登出' });
+  });
+});
+
+// 獲取當前用戶資訊的路由
+router.get('/current-user', (req, res) => {
+  if (req.session.userId) {
+      // 這裡可以從數據庫獲取更多用戶資訊
+      res.json({ loggedIn: true, userId: req.session.userId });
+  } else {
+      res.json({ loggedIn: false });
   }
 });
 

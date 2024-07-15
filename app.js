@@ -1,19 +1,29 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var mongoose = require('mongoose');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const session = require('express-session');
 
-var app = express();
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+
+const app = express();
 
 // 設置視圖引擎
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// 中間件設置
+// session 中間件設置
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 } // 24 小時
+}));
+
+// 其他中間件設置
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -31,11 +41,8 @@ app.use(function(req, res, next) {
 
 // 錯誤處理
 app.use(function(err, req, res, next) {
-  // 設置本地變量，只在開發環境中提供錯誤信息
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // 渲染錯誤頁面
   res.status(err.status || 500);
   res.render('error');
 });
@@ -43,16 +50,12 @@ app.use(function(err, req, res, next) {
 // 連接數據庫並啟動服務器
 const connectDBAndStartServer = async () => {
   try {
-    await mongoose.connect('mongodb+srv://k9202ky:k200891359d@cluster0.2pgtsea.mongodb.net/?tls=true', {
-    });
+    await mongoose.connect('mongodb+srv://k9202ky:k200891359d@cluster0.2pgtsea.mongodb.net/?tls=true', {});
     console.log('MongoDB connected successfully');
-
-    // 測試數據庫連接
     await mongoose.connection.db.admin().ping();
     console.log('Database connection is responsive');
 
-    // 啟動服務器
-    const port = process.env.PORT || 3001; // 使用 3001 或其他可用端口
+    const port = process.env.PORT || 3001;
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
