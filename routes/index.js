@@ -55,4 +55,32 @@ router.post('/register', async (req, res) => {
   }
 });
 
+/* POST login user. */
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+      return res.json({ success: false, message: '請輸入電子郵件和密碼' });
+  }
+
+  try {
+      const user = await User.findOne({ email: email.toLowerCase() });
+      if (!user) {
+          return res.json({ success: false, message: '用戶不存在' });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+          return res.json({ success: false, message: '密碼錯誤' });
+      }
+
+      // Here you would typically create a session or JWT token
+      // For simplicity, we're just sending a success message
+      res.json({ success: true, message: '登入成功' });
+  } catch (error) {
+      console.error('Login error:', error);
+      res.json({ success: false, message: '登入過程中發生錯誤，請稍後再試' });
+  }
+});
+
 module.exports = router;

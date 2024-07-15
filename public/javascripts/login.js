@@ -1,40 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('registerForm');
+    const form = document.getElementById('loginForm');
     
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const username = document.getElementById('username').value;
         const email = document.getElementById('email').value;
-        const phone = document.getElementById('phone').value;
         const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
         
-        if (password !== confirmPassword) {
-            alert('密碼不匹配');
-            return;
-        }
-        
-        // 發送註冊請求到服務器
-        fetch('/register', {
+        fetch('/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, email, phone, password }),
+            body: JSON.stringify({ email, password }),
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('註冊成功！');
-                window.location.href = '/login'; // 註冊成功後重定向到登入頁面
+                alert('登入成功！');
+                window.location.href = '/'; // 登入成功後重定向到首頁
             } else {
-                alert('註冊失敗：' + data.message);
+                alert('登入失敗：' + data.message);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('註冊過程中發生錯誤，請稍後再試。');
+            alert('登入過程中發生錯誤，請稍後再試。');
         });
     });
 });
