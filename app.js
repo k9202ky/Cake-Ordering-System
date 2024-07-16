@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const session = require('express-session');
+require('dotenv').config(); // 確保 dotenv 被正確加載
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -66,5 +67,6 @@ const connectDBAndStartServer = async () => {
 };
 
 connectDBAndStartServer();
+console.log('SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY);
 
 module.exports = app;
