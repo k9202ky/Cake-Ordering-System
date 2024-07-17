@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const phone = document.getElementById('phone').value;
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
-      
+      const subscribe = document.getElementById('subscribe').checked;
+
       if (password !== confirmPassword) {
         alert('密碼不匹配');
         return;
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, phone, password }),
+        body: JSON.stringify({ username, email, phone, password, subscribe}),
       })
       .then(response => response.json())
       .then(data => {

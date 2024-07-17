@@ -8,10 +8,10 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-// 添加登錄路由
+/* POST register user. */
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, phone, password } = req.body;
+    const { username, email, phone, password ,subscribe} = req.body;
     
     // 將 email 轉換為小寫
     const lowerCaseEmail = email.toLowerCase();
@@ -27,7 +27,8 @@ router.post('/register', async (req, res) => {
       username,
       email: lowerCaseEmail,
       phone,
-      password: await bcrypt.hash(password, 10)
+      password: await bcrypt.hash(password, 10),
+      subscribe: subscribe
     });
 
     await newUser.save();
