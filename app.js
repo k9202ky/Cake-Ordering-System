@@ -51,7 +51,7 @@ app.use(function(err, req, res, next) {
 // 連接數據庫並啟動服務器
 const connectDBAndStartServer = async () => {
   try {
-    await mongoose.connect('mongodb+srv://k9202ky:k200891359d@cluster0.2pgtsea.mongodb.net/?tls=true', {});
+    await mongoose.connect(process.env.MongoURL, {});
     console.log('MongoDB connected successfully');
     await mongoose.connection.db.admin().ping();
     console.log('Database connection is responsive');
