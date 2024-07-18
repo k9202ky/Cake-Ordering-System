@@ -95,13 +95,14 @@ router.get('/current-user', (req, res) => {
 });
 
 
-/* POST forgot-password. */
+/* POST /forgot-password */
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
+      console.log('找不到用戶:', email);
       return res.status(404).json({ message: '找不到該電子郵件地址的用戶' });
     }
 
@@ -109,7 +110,24 @@ router.post('/forgot-password', async (req, res) => {
     const resetToken = crypto.randomBytes(20).toString('hex');
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = Date.now() + 3600000; // 1 小時後過期
+
     await user.save();
+
+    console.log('用戶保存後:', {
+      id: user._id,
+      email: user.email,
+      resetPasswordToken: user.resetPasswordToken,
+      resetPasswordExpires: user.resetPasswordExpires
+    });
+
+    // 再次檢查用戶是否正確保存
+    const checkUser = await User.findOne({ email: user.email });
+    console.log('再次檢查用戶:', {
+      id: checkUser._id,
+      email: checkUser.email,
+      resetPasswordToken: checkUser.resetPasswordToken,
+      resetPasswordExpires: checkUser.resetPasswordExpires
+    });
 
     // 發送重設密碼郵件
     const resetUrl = `http://${req.headers.host}/reset-password/${resetToken}`;
@@ -127,47 +145,101 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-/* GET reset-password/:token. */
+/* GET /reset-password/:token */
 router.get('/reset-password/:token', async (req, res) => {
   try {
+    console.log('收到的令牌:', req.params.token);
+
     const user = await User.findOne({
       resetPasswordToken: req.params.token,
-      resetPasswordExpires: { $gt: Date.now() },
+      resetPasswordExpires: { $gt: Date.now() }
     });
 
+    console.log('找到的用戶:', user ? {
+      id: user._id,
+      email: user.email,
+      resetPasswordToken: user.resetPasswordToken,
+      resetPasswordExpires: user.resetPasswordExpires
+    } : null);
+
     if (!user) {
-      return res.status(400).send('密碼重設令牌無效或已過期');
+      console.log('令牌無效或已過期');
+      return res.status(400).render('error', { message: '密碼重設令牌無效或已過期' });
     }
 
     res.render('reset-password', { token: req.params.token });
   } catch (error) {
     console.error('重設密碼錯誤:', error);
-    res.status(500).send('重設密碼時發生錯誤');
+    res.status(500).render('error', { message: '重設密碼時發生錯誤' });
   }
 });
 
-/* POST reset-password/:token. */
+/* POST reset-password/:token */
 router.post('/reset-password/:token', async (req, res) => {
+  console.log('接收到重設密碼請求，令牌:', req.params.token);
+  
   try {
     const user = await User.findOne({
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() },
     });
 
+    console.log('找到的用戶:', user ? {
+      id: user._id,
+      email: user.email,
+      resetPasswordTokenExists: !!user.resetPasswordToken,
+      resetPasswordExpires: user.resetPasswordExpires
+    } : null);
+
     if (!user) {
+      console.log('密碼重設令牌無效或已過期');
       return res.status(400).json({ message: '密碼重設令牌無效或已過期' });
     }
 
+    // 驗證新密碼
+    if (!req.body.password) {
+      console.log('新密碼未提供');
+      return res.status(400).json({ message: '請提供新密碼' });
+    }
+
     // 設置新密碼
-    user.password = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    user.password = hashedPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
+
     await user.save();
+
+    console.log('密碼已成功重設，用戶ID:', user._id);
 
     res.json({ message: '密碼已成功重設' });
   } catch (error) {
     console.error('重設密碼錯誤:', error);
-    res.status(500).json({ message: '重設密碼時發生錯誤' });
+    res.status(500).json({ message: '重設密碼時發生錯誤', error: error.message });
+  }
+});
+
+/* GET /check-token/:token */
+router.get('/check-token/:token', async (req, res) => {
+  try {
+    console.log('檢查令牌:', req.params.token);
+
+    const user = await User.findOne({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    console.log('令牌檢查時找到的用戶:', user ? {
+      id: user._id,
+      email: user.email,
+      resetPasswordToken: user.resetPasswordToken,
+      resetPasswordExpires: user.resetPasswordExpires
+    } : null);
+
+    res.json({ valid: !!user });
+  } catch (error) {
+    console.error('令牌檢查錯誤:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 

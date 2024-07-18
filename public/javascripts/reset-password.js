@@ -11,15 +11,21 @@ document.getElementById('resetPasswordForm').addEventListener('submit', async (e
 
     try {
         const response = await fetch(`/reset-password/${token}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
         });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || '重設密碼時發生錯誤');
+        }
+    
         const data = await response.json();
         alert(data.message);
         window.location.href = '/login'; // 重定向到登入頁面
-    } catch (error) {
+      } catch (error) {
         console.error('Error:', error);
-        alert('重設密碼時發生錯誤');
-    }
+        alert(error.message);
+      }
 });
