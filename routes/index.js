@@ -23,6 +23,14 @@ router.get('/register', (req, res) => {
   res.render('register', { title: '註冊 - 祥盛中西禮餅' });
 });
 
+/* GET contact page. */
+router.get('/contact', (req, res) => {
+  res.render('contact', {
+    title: '聯絡我們 - 祥盛中西禮餅',
+    GOOGLE_MAP_API_KEY: process.env.GOOGLE_MAP_API_KEY
+  });
+});
+
 /* GET forgot-password page. */
 router.get('/forgot-password', (req, res) => {
   res.render('forgot-password', { title: '忘記密碼 - 祥盛中西禮餅' });

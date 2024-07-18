@@ -40,6 +40,12 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
+// 確保在渲染模板時傳遞 API 金鑰
+app.get('/contact', (req, res) => {
+  console.log('GOOGLE_MAP_API_KEY:', process.env.GOOGLE_MAP_API_KEY); 
+  res.render('contact', { GOOGLE_MAP_API_KEY: process.env.GOOGLE_MAP_API_KEY });
+});
+
 // 錯誤處理
 app.use(function(err, req, res, next) {
   res.locals.message = err.message;

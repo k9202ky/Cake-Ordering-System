@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聯絡我們 - 祥盛中西禮餅</title>
+    <link rel="stylesheet" href="/stylesheets/contact.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= GOOGLE_MAP_API_KEY %>&callback=initMap" async defer></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">祥盛中西禮餅</div>
+            <ul>
+                <li><a href="/">首頁</a></li>
+                <li><a href="index.html#cakes">蛋糕目錄</a></li>
+                <li><a href="/contact">聯絡我們</a></li>
+                <li><a href="/login">登入</a></li>
+                <li><a href="/register">註冊</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>聯絡我們</h1>
+            <div class="contact-info">
+                <div class="info-group">
+                    <h2>聯絡方式</h2>
+                    <p><strong>店面電話：</strong> 03-4759382</p>
+                    <p><strong>手機：</strong> 0921086311</p>
+                    <p><strong>LINE ID：</strong> 0921086311</p>
+                </div>
+                <div class="info-group">
+                    <h2>社群媒體</h2>
+                    <p><a href="https://www.facebook.com/profile.php?id=100054668594493&locale=zh_TW" target="_blank">Facebook 粉絲專頁</a></p>
+                </div>
+                <div class="info-group">
+                    <h2>店面地址</h2>
+                    <p>桃園市楊梅區楊新路319號</p>
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 祥盛中西禮餅. 版權所有.</p>
+    </footer>
+
+    <script src="/javascripts/contact.js"></script>
+    <script src="/javascripts/auth.js"></script>
+</body>
+</html>
