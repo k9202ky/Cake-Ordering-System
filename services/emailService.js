@@ -5,7 +5,10 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const sendEmail = async (to, subject, text, html) => {
   const msg = {
     to,
-    from: 'k9202ky@gmail.com', // 使用您在 SendGrid 驗證的發件人郵箱
+    from: {
+      email: 'k9202ky@gmail.com', 
+      name: '祥盛中西禮餅' 
+    }, 
     subject,
     text,
     html,

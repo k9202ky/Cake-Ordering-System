@@ -133,7 +133,7 @@ router.post('/forgot-password', async (req, res) => {
     const resetUrl = `http://${req.headers.host}/reset-password/${resetToken}`;
     await sendEmail(
       user.email,
-      '重設您的密碼',
+      '祥盛中西禮餅 - 重設您的密碼',
       `請點擊以下連結重設您的密碼：${resetUrl}`,
       `<p>請點擊<a href="${resetUrl}">這裡</a>重設您的密碼</p>`
     );
