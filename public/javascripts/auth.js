@@ -1,58 +1,100 @@
-// 登入函數
+// 登入函數也需要更新
 function login(email, password) {
-    return fetch('/login', {
+    console.log('嘗試登入:', email);
+    return fetch('https://xiangshengcake.vercel.app/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('登入失敗');
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('登入回應:', data);
         if (data.success) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', data.username);
+            console.log('登入成功，已儲存 token 和 username');
             return data;
         } else {
-            throw new Error(data.message);
+            throw new Error(data.message || '登入失敗');
         }
+    })
+    .catch(error => {
+        console.error('登入錯誤:', error);
+        throw error;
     });
 }
 
-// 登出函數
+// 登出函數也需要更新
 function logout() {
-    return fetch('/logout', { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('username');
-                showNotification(data.message);
-                setTimeout(() => {
-                    window.location.href = '/'; // 重定向到首頁
-                }, 2000); // 2秒後重定向
-            } else {
-                throw new Error(data.message);
-            }
-        })
-        .catch(error => {
-            showNotification('登出過程中發生錯誤：' + error.message, 'error');
-        });
-}
-
-// 檢查登入狀態
-function checkLoginStatus() {
-    return fetch('/current-user', {
+    console.log('嘗試登出');
+    const token = localStorage.getItem('token');
+    return fetch('https://xiangshengcake.vercel.app/logout', {
+        method: 'POST',
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${token}`
         }
     })
     .then(response => response.json())
     .then(data => {
+        console.log('登出回應:', data);
+        if (data.success) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            console.log('已清除本地存儲');
+            showNotification(data.message);
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        } else {
+            throw new Error(data.message || '登出失敗');
+        }
+    })
+    .catch(error => {
+        console.error('登出錯誤:', error);
+        showNotification('登出過程中發生錯誤：' + error.message, 'error');
+    });
+}
+
+// 檢查登入狀態
+function checkLoginStatus() {
+    const token = localStorage.getItem('token');
+    console.log('檢查登入狀態，token:', token ? '存在' : '不存在');
+    if (!token) {
+        console.log('無 token，視為未登入');
+        updateNavbarLoggedOut();
+        return Promise.resolve(false);
+    }
+
+    // 這裡使用完整的 URL
+    return fetch('https://xiangshengcake.vercel.app/current-user', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('伺服器回應不正確');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('檢查登入狀態回應:', data);
         if (data.loggedIn) {
-            updateNavbar(localStorage.getItem('username'));
+            updateNavbar(data.user.username);
         } else {
             updateNavbarLoggedOut();
         }
         return data.loggedIn;
+    })
+    .catch(error => {
+        console.error('檢查登入狀態錯誤:', error);
+        updateNavbarLoggedOut();
+        return false;
     });
 }
 
@@ -112,4 +154,9 @@ function updateNavbarLoggedOut() {
 }
 
 // 頁面加載時檢查登入狀態
-document.addEventListener('DOMContentLoaded', checkLoginStatus);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM 已加載，開始檢查登入狀態');
+    checkLoginStatus().then(loggedIn => {
+        console.log('登入狀態檢查完成，用戶是否登入:', loggedIn);
+    });
+});

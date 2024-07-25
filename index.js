@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const cors = require('cors');
 require('dotenv').config(); // 確保 dotenv 被正確加載
 
 const indexRouter = require('./routes/index');
@@ -24,6 +25,11 @@ app.use(session({
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 } // 24 小時
 }));
 
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
+
 // 其他中間件設置
 app.use(logger('dev'));
 app.use(express.json());
@@ -41,8 +47,7 @@ app.use(function(req, res, next) {
 });
 
 // 確保在渲染模板時傳遞 API 金鑰
-app.get('/contact', (req, res) => {
-  console.log('GOOGLE_MAP_API_KEY:', process.env.GOOGLE_MAP_API_KEY); 
+app.get('/contact', (req, res) => { 
   res.render('contact', { GOOGLE_MAP_API_KEY: process.env.GOOGLE_MAP_API_KEY });
 });
 

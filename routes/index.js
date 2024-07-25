@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
 const { sendEmail } = require('../services/emailService');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+require('dotenv').config();
 
 /* GET home page. */
 router.get('/', (req, res) => {
@@ -44,23 +45,17 @@ router.get('/reset-password', (req, res) => {
 /* POST login user. */
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ success: false, message: '電子郵件或密碼錯誤' });
     }
-
     // 創建 JWT
     const token = jwt.sign(
       { userId: user._id, username: user.username },
-      'your_jwt_secret',
+      JWT_SECRET,
       { expiresIn: '24h' }
     );
-
-    // 設置 session
-    req.session.userId = user._id;
-
     res.json({
       success: true,
       message: '登入成功',
@@ -75,22 +70,36 @@ router.post('/login', async (req, res) => {
 
 // 登出路由
 router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ success: false, message: '登出失敗' });
-    }
-    res.clearCookie('connect.sid');
-    res.json({ success: true, message: '成功登出' });
-  });
+  // 對於 JWT，客戶端應該自行清除 token
+  res.json({ success: true, message: '成功登出' });
 });
 
+// 中間件：驗證 JWT
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
 // 獲取當前用戶資訊的路由
-router.get('/current-user', (req, res) => {
-  if (req.session.userId) {
-    // 這裡可以從數據庫獲取更多用戶資訊
-    res.json({ loggedIn: true, userId: req.session.userId });
-  } else {
-    res.json({ loggedIn: false });
+router.get('/current-user', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+    if (user) {
+      res.json({ loggedIn: true, user: user });
+    } else {
+      res.status(404).json({ loggedIn: false, message: '用戶不存在' });
+    }
+  } catch (error) {
+    console.error('Error fetching current user:', error);
+    res.status(500).json({ loggedIn: false, message: '獲取用戶信息時發生錯誤' });
   }
 });
 
