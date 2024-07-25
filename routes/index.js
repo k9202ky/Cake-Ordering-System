@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
     // 創建 JWT
     const token = jwt.sign(
       { userId: user._id, username: user.username },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
     res.json({
@@ -81,7 +81,7 @@ function authenticateToken(req, res, next) {
 
   if (token == null) return res.sendStatus(401);
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
