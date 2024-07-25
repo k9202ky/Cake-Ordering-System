@@ -13,6 +13,21 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 
+
+app.get('/keep-warm', async (req, res) => {
+  try {
+    console.log('Keeping app warm:', new Date().toISOString());
+    
+    // 可以添加一個簡單的數據庫操作來保持數據庫連接活躍
+    await mongoose.connection.db.admin().ping();
+    
+    res.send('App is warm and database is responsive');
+  } catch (error) {
+    console.error('Error in keep-warm route:', error);
+    res.status(500).send('Error keeping app warm');
+  }
+});
+
 // 設置視圖引擎
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -23,11 +38,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 } // 24 小時
-}));
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
 }));
 
 // 其他中間件設置
