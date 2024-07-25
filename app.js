@@ -40,6 +40,11 @@ app.use(session({
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 } // 24 小時
 }));
 
+app.use(cors({  
+  origin: process.env.FRONTEND_URL,
+  credentials: true 
+})); 
+
 // 其他中間件設置
 app.use(logger('dev'));
 app.use(express.json());
