@@ -14,18 +14,9 @@ const usersRouter = require('./routes/users');
 const app = express();
 
 
-app.get('/keep-warm', async (req, res) => {
-  try {
-    console.log('Keeping app warm:', new Date().toISOString());
-    
-    // 可以添加一個簡單的數據庫操作來保持數據庫連接活躍
-    await mongoose.connection.db.admin().ping();
-    
-    res.send('App is warm and database is responsive');
-  } catch (error) {
-    console.error('Error in keep-warm route:', error);
-    res.status(500).send('Error keeping app warm');
-  }
+app.get('/keep-warm', (req, res) => {
+  console.log('Keeping app warm:', new Date().toISOString());
+  res.send('App is warm');
 });
 
 // 設置視圖引擎
