@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const cors = require('cors');
 require('dotenv').config(); // 確保 dotenv 被正確加載
 
@@ -23,11 +24,15 @@ app.get('/keep-warm', (req, res) => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// session 中間件設置
+// 使用 MongoStore 作為 session 存儲
 app.use(session({
-  secret: 'your_secret_key',
+  secret: process.env.SECRET_KEY, // 使用一個安全的密鑰
   resave: false,
   saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI, // 使用你的 MongoDB 連接 URL
+    ttl: 24 * 60 * 60 // 1 天
+  }),
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 } // 24 小時
 }));
 
@@ -67,9 +72,9 @@ app.use(function(err, req, res, next) {
 });
 
 // 連接數據庫並啟動服務器
-const connectDBAndStartServer = async () => {
+const connectWithRetry = async (retries = 5, delay = 5000) => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {});
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('MongoDB connected successfully');
     await mongoose.connection.db.admin().ping();
     console.log('Database connection is responsive');
@@ -79,11 +84,15 @@ const connectDBAndStartServer = async () => {
       console.log(`Server is running on port ${port}`);
     });
   } catch (error) {
-    console.error('Failed to connect to MongoDB or start server:', error);
-    process.exit(1);
+    if (retries === 0) {
+      console.log('MongoDB connection unsuccessful, exiting');
+      process.exit(1);
+    }
+    console.log(`MongoDB connection unsuccessful, retrying in ${delay}ms...`);
+    setTimeout(() => connectWithRetry(retries - 1, delay), delay);
   }
 };
 
-connectDBAndStartServer();
+connectWithRetry();
 
 module.exports = app;
