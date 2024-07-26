@@ -6,7 +6,7 @@ const sendEmail = async (to, subject, text, html) => {
   const msg = {
     to,
     from: {
-      email: 'k9202ky@gmail.com', 
+      email: 'service@creamlady.com', 
       name: '祥盛中西禮餅' 
     }, 
     subject,
