@@ -68,7 +68,7 @@ app.use(function(err, req, res, next) {
 // 連接數據庫並啟動服務器
 const connectDBAndStartServer = async () => {
   try {
-    await mongoose.connect(process.env.MongoURL, {});
+    await mongoose.connect(process.env.MONGODB_URI, {});
     console.log('MongoDB connected successfully');
     await mongoose.connection.db.admin().ping();
     console.log('Database connection is responsive');
