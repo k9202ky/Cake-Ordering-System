@@ -139,7 +139,7 @@ router.post('/forgot-password', async (req, res) => {
     });
 
     // 發送重設密碼郵件
-    const resetUrl = `http://${req.headers.host}/reset-password/${resetToken}`;
+    const resetUrl = `https://creamlady.com/reset-password/${resetToken}`;
     await sendEmail(
       user.email,
       '祥盛中西禮餅 - 重設您的密碼',
