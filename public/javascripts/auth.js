@@ -1,7 +1,7 @@
-// 登入函數也需要更新
+// 登入函數
 function login(email, password) {
     console.log('嘗試登入:', email);
-    return fetch('https://xiangshengcake.vercel.app/login', {
+    return fetch('https://www.creamlady.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -29,11 +29,11 @@ function login(email, password) {
     });
 }
 
-// 登出函數也需要更新
+// 登出函數
 function logout() {
     console.log('嘗試登出');
     const token = localStorage.getItem('token');
-    return fetch('https://xiangshengcake.vercel.app/logout', {
+    return fetch('https://www.creamlady.com/logout', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -71,7 +71,7 @@ function checkLoginStatus() {
     }
 
     // 這裡使用完整的 URL
-    return fetch('https://xiangshengcake.vercel.app/current-user', {
+    return fetch('https://www.creamlady.com/current-user', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
