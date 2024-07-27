@@ -40,6 +40,19 @@ const ensureDbConnection = async () => {
   }
 };
 
+app.get('/keep-warm', async (req, res) => {
+  console.log('Keeping app warm:', new Date().toISOString());
+  try {
+    await ensureDbConnection();
+    await mongoose.connection.db.admin().ping();
+    console.log('Database connection is responsive');
+    res.send('App and database connection are warm');
+  } catch (error) {
+    console.error('Error in keep-warm route:', error);
+    res.status(500).send('Error keeping app warm');
+  }
+});
+
 // 設置視圖引擎
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -94,19 +107,6 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.render('error');
-});
-
-app.get('/keep-warm', async (req, res) => {
-  console.log('Keeping app warm:', new Date().toISOString());
-  try {
-    await ensureDbConnection();
-    await mongoose.connection.db.admin().ping();
-    console.log('Database connection is responsive');
-    res.send('App and database connection are warm');
-  } catch (error) {
-    console.error('Error in keep-warm route:', error);
-    res.status(500).send('Error keeping app warm');
-  }
 });
 
 // 連接數據庫並啟動服務器
