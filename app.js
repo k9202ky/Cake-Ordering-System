@@ -14,18 +14,31 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 
-
-app.get('/keep-warm', async (req, res) => {
-  console.log('Keeping app warm:', new Date().toISOString());
+const connectWithRetry = async (retries = 5, delay = 5000) => {
   try {
-    await mongoose.connection.db.admin().ping();
-    console.log('Database connection is responsive');
-    res.send('App and database connection are warm');
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 60000, // 增加超時時間到 60 秒
+      maxPoolSize: 10, // 使用連接池
+      socketTimeoutMS: 45000,
+    });
+    console.log('MongoDB connected successfully');
   } catch (error) {
-    console.error('Error in keep-warm route:', error);
-    res.status(500).send('Error keeping app warm');
+    console.error('MongoDB connection error:', error);
+    if (retries === 0) {
+      console.log('MongoDB connection unsuccessful, exiting');
+      process.exit(1);
+    }
+    console.log(`MongoDB connection unsuccessful, retrying in ${delay}ms...`);
+    setTimeout(() => connectWithRetry(retries - 1, delay), delay);
   }
-});
+};
+
+const ensureDbConnection = async () => {
+  if (mongoose.connection.readyState !== 1) { // 1 表示已連接
+    console.log('Database not connected, trying to reconnect...');
+    await connectWithRetry();
+  }
+};
 
 // 設置視圖引擎
 app.set('views', path.join(__dirname, 'views'));
@@ -47,7 +60,6 @@ app.use(cors({
   origin: ['https://www.creamlady.com', 'https://creamlady.com'],
   credentials: true
 }));
-
 
 // 其他中間件設置
 app.use(logger('dev'));
@@ -84,33 +96,28 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-// 連接數據庫並啟動服務器
-const connectWithRetry = async (retries = 5, delay = 5000) => {
+app.get('/keep-warm', async (req, res) => {
+  console.log('Keeping app warm:', new Date().toISOString());
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 60000, // 增加超時時間到 60 秒
-      maxPoolSize: 10, // 使用連接池
-      socketTimeoutMS: 45000,
-    });
-    console.log('MongoDB connected successfully');
+    await ensureDbConnection();
     await mongoose.connection.db.admin().ping();
     console.log('Database connection is responsive');
-
-    const port = process.env.PORT || 3001;
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    });
+    res.send('App and database connection are warm');
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    if (retries === 0) {
-      console.log('MongoDB connection unsuccessful, exiting');
-      process.exit(1);
-    }
-    console.log(`MongoDB connection unsuccessful, retrying in ${delay}ms...`);
-    setTimeout(() => connectWithRetry(retries - 1, delay), delay);
+    console.error('Error in keep-warm route:', error);
+    res.status(500).send('Error keeping app warm');
   }
+});
+
+// 連接數據庫並啟動服務器
+const startServer = async () => {
+  await connectWithRetry();
+  const port = process.env.PORT || 3001;
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
 };
 
-connectWithRetry();
+startServer();
 
 module.exports = app;
