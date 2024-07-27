@@ -55,6 +55,10 @@ h1 {
     color: #e75480;
 }
 
+h2{
+    color: #e75480;
+}
+
 .cta-button {
     display: inline-block;
     background-color: #e75480;
@@ -101,4 +105,42 @@ footer {
 
 .notification.fade-out {
     opacity: 0;
+}
+
+.cake-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.cake-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.cake-item:hover {
+    transform: translateY(-5px);
+}
+
+.cake-item img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.cake-item h3 {
+    color: #e75480;
+    margin-bottom: 10px;
+}
+
+.cake-item p {
+    color: #666;
 }
