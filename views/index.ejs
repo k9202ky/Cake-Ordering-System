@@ -26,7 +26,6 @@
                 <li><a href="/cakes">蛋糕目錄</a></li>
                 <li><a href="/contact">聯絡我們</a></li>
                 <li><a href="/login">登入</a></li>
-                <li><a href="/register">註冊</a></li>
             </ul>
         </nav>
     </header>
@@ -42,17 +41,17 @@
             <h2>熱門蛋糕</h2>
             <div class="cake-grid">
                 <div class="cake-item">
-                    <img src="/images/1.jpg" alt="提拉米蘇">
+                    <img src="/images/1.jpg" loading="lazy" alt="提拉米蘇" onclick="openModal('tiramisu', '提拉米蘇', '/images/1.jpg')">
                     <h3>提拉米蘇</h3>
                     <p>綿密細膩的口感，濃郁咖啡與奶酪的完美結合</p>
                 </div>
                 <div class="cake-item">
-                    <img src="/images/2.jpg" alt="冰淇淋蛋糕">
+                    <img src="/images/2.jpg" loading="lazy" alt="冰淇淋蛋糕" onclick="openModal('ice cream cake', '冰淇淋蛋糕', '/images/2.jpg')">
                     <h3>冰淇淋蛋糕</h3>
                     <p>冰爽滑順，沁人心脾</p>
                 </div>
                 <div class="cake-item">
-                    <img src="/images/3.jpg" alt="鮮奶油蛋糕">
+                    <img src="/images/3.jpg" loading="lazy" alt="鮮奶油蛋糕" onclick="openModal('cream cake', '鮮奶油蛋糕', '/images/3.jpg')">
                     <h3>鮮奶油蛋糕</h3>
                     <p>柔滑鮮奶，入口即化</p>
                 </div>
@@ -63,6 +62,38 @@
         <p>&copy; 2024 祥盛中西禮餅. 版權所有.</p>
     </footer>
 
+    <script src="/javascripts/cart.js"></script>
     <script src="/javascripts/auth.js"></script>
+    <script src="/javascripts/cakeModal.js"></script>
+
+    <!-- 蛋糕詳細信息模態框 -->
+    <div id="cakeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="">
+            <h2 id="modalTitle" data-cake-id=""></h2>
+            <form id="cakeOrderForm">
+                <label for="size">尺寸：</label>
+                <select id="size" name="size">
+                    <option value="small">6吋</option>
+                    <option value="medium">8吋</option>
+                    <option value="large">10吋</option>
+                    <option value="xlarge">12吋</option>
+                </select>
+                <br>
+                <label for="quantity">數量：</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1">
+                <br>
+                <button type="submit">加入購物車</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="cartModal">
+        <h3>購物車</h3>
+        <div id="cartItems"></div>
+        <div>總計: $<span id="cartTotal">0.00</span></div>
+    </div>
+
 </body>
 </html>

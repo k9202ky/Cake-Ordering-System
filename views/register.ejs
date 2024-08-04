@@ -26,7 +26,6 @@
                 <li><a href="/cakes">蛋糕目錄</a></li>
                 <li><a href="/contact">聯絡我們</a></li>
                 <li><a href="/login">登入</a></li>
-                <li><a href="/register">註冊</a></li>
             </ul>
         </nav>
     </header>
@@ -71,7 +70,15 @@
         <p>&copy; 2024 祥盛中西禮餅. 版權所有.</p>
     </footer>
 
+    <script src="/javascripts/cart.js"></script>
     <script src="/javascripts/register.js"></script>
     <script src="/javascripts/auth.js"></script>
+
+    <div id="cartModal">
+        <h3>購物車</h3>
+        <div id="cartItems"></div>
+        <div>總計: $<span id="cartTotal">0.00</span></div>
+    </div>
+
 </body>
 </html>

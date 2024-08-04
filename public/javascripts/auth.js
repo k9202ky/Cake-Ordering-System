@@ -70,7 +70,6 @@ function checkLoginStatus() {
         return Promise.resolve(false);
     }
 
-    // 這裡使用完整的 URL
     return fetch('https://www.creamlady.com/current-user', {
         headers: {
             'Authorization': `Bearer ${token}`
@@ -86,6 +85,7 @@ function checkLoginStatus() {
         console.log('檢查登入狀態回應:', data);
         if (data.loggedIn) {
             updateNavbar(data.user.username);
+            cart.updateCartUI();  // 確保購物車界面正確更新
         } else {
             updateNavbarLoggedOut();
         }
@@ -118,13 +118,13 @@ function showNotification(message, type = 'success') {
         zIndex: '1000'
     });
 
-    // 3秒後自動移除通知
+    // 3 秒後自動隱藏
     setTimeout(() => {
         notification.remove();
     }, 3000);
 }
 
-// 更新導航欄（登入狀態）
+// 更新導航欄為登入狀態
 function updateNavbar(username) {
     const navUl = document.querySelector('nav ul');
     navUl.innerHTML = `
@@ -132,16 +132,28 @@ function updateNavbar(username) {
         <li><a href="/cakes">蛋糕目錄</a></li>
         <li><a href="/contact">聯絡我們</a></li>
         <li>您好：${username}</li>
+        <li>
+            <a href="#" id="cartIcon" class="cart-icon">
+                🛒 <span id="cartCount">0</span>
+            </a>
+        </li>
         <li><a href="#" id="logoutBtn">登出</a></li>
     `;
+
+    document.getElementById('cartIcon').addEventListener('click', function(e) {
+        e.preventDefault();
+        cart.toggleCartView();
+    });
 
     document.getElementById('logoutBtn').addEventListener('click', function(e) {
         e.preventDefault();
         logout();
     });
+
+    cart.updateCartUI();  // 確保購物車界面正確更新
 }
 
-// 更新導航欄（未登入狀態）
+// 更新導航欄為未登入狀態
 function updateNavbarLoggedOut() {
     const navUl = document.querySelector('nav ul');
     navUl.innerHTML = `
@@ -149,14 +161,24 @@ function updateNavbarLoggedOut() {
         <li><a href="/cakes">蛋糕目錄</a></li>
         <li><a href="/contact">聯絡我們</a></li>
         <li><a href="/login">登入</a></li>
-        <li><a href="/register">註冊</a></li>
+        <li>
+            <a href="#" id="cartIcon" class="cart-icon">
+                🛒 <span id="cartCount">0</span>
+            </a>
+        </li>
     `;
+
+    document.getElementById('cartIcon').addEventListener('click', function(e) {
+        e.preventDefault();
+        cart.toggleCartView();
+    });
+
+    cart.updateCartUI();  // 確保購物車界面正確更新
 }
 
-// 頁面加載時檢查登入狀態
+// DOM 加載完成後執行
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM 已加載，開始檢查登入狀態');
     checkLoginStatus().then(loggedIn => {
-        console.log('登入狀態檢查完成，用戶是否登入:', loggedIn);
+        cart.updateCartUI();  // 確保購物車界面正確更新
     });
 });
