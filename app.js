@@ -68,6 +68,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/favicon.ico', express.static(__dirname + '/favicon.ico'));
 
 // CORS 設置
 app.use(cors({
