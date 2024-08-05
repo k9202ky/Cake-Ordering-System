@@ -53,6 +53,7 @@ main {
     justify-content: center;
     align-items: flex-start;
     padding: 20px;
+    background-color: #cda581;
 }
 
 .container {

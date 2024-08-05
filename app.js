@@ -68,7 +68,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/favicon.ico', express.static(__dirname + '/favicon.ico'));
+app.use(express.static(path.join(__dirname)));
+app.use((req, res, next) => {
+  if (req.url === '/site.webmanifest') {
+    res.setHeader('Content-Type', 'application/manifest+json');
+  }
+  next();
+});
 
 // CORS 設置
 app.use(cors({
