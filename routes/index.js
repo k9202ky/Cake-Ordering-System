@@ -26,10 +26,7 @@ router.get('/register', (req, res) => {
 
 /* GET contact page. */
 router.get('/contact', (req, res) => {
-  res.render('contact', {
-    title: '聯絡我們 - 祥盛中西禮餅',
-    GOOGLE_MAP_API_KEY: process.env.GOOGLE_MAP_API_KEY
-  });
+  res.render('contact', { title: '聯絡我們 - 祥盛中西禮餅' });
 });
 
 /* GET cakes page. */

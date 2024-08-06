@@ -74,6 +74,7 @@ class Cart {
         const cartCount = document.getElementById('cartCount');
         const cartItems = document.getElementById('cartItems');
         const cartTotal = document.getElementById('cartTotal');
+        const checkoutButton = document.getElementById('checkoutButton');
         
         if (cartCount) {
             cartCount.textContent = this.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -118,6 +119,9 @@ class Cart {
             });
 
             cartTotal.textContent = total.toFixed(2);
+            if (checkoutButton) {
+                checkoutButton.style.display = total > 0 ? 'block' : 'none';
+            }
         }
     }
 
@@ -126,6 +130,10 @@ class Cart {
             if (e.target.classList.contains('remove-item')) {
                 const { id, size } = e.target.dataset;
                 this.removeItem(id, size);
+            }
+
+            if (e.target.id === 'checkoutButton') {
+                this.handleCheckout();
             }
         });
 
@@ -149,6 +157,16 @@ class Cart {
                 cartModal.style.display = 'none';
             }
         });
+    }
+
+    handleCheckout() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('請先登入才能進行結帳');
+            window.location.href = '/login'; // 重定向到登入頁面
+        } else {
+            window.location.href = '/checkout'; // 重定向到結帳頁面
+        }
     }
 
     toggleCartView() {

@@ -90,11 +90,17 @@ h1 {
     margin: 5px 0;
 }
 
-#map {
-    height: 500px;
-    width: 100%;
-    margin-top: 10px;
-    border-radius: 5px;
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 footer {

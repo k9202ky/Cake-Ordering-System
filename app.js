@@ -136,11 +136,6 @@ app.use(async (req, res, next) => {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-// Contact 頁面路由渲染
-app.get('/contact', (req, res) => { 
-  res.render('contact', { GOOGLE_MAP_API_KEY: process.env.GOOGLE_MAP_API_KEY });
-});
-
 // 404 錯誤處理
 app.use(function(req, res, next) {
   next(createError(404));
