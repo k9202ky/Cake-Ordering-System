@@ -72,7 +72,7 @@
     <script src="/javascripts/cakeModal.js"></script>
     <script src="/javascripts/auth.js"></script>
 
-         <!-- 蛋糕詳細信息模態框 -->
+    <!-- 蛋糕詳細信息模態框 -->
     <div id="cakeModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -87,6 +87,14 @@
                     <option value="xlarge">12吋</option>
                 </select>
                 <br>
+                <div id="filling-container">
+                    <label for="filling">夾餡：</label>
+                    <select id="filling" name="filling">
+                        <option value="fruit_pudding">水果+布丁</option>
+                        <option value="taro_pudding">芋頭+布丁</option>
+                        <option value="blueberry_pudding">藍莓+布丁</option>
+                    </select>
+                </div>
                 <label for="quantity">數量：</label>
                 <input type="number" id="quantity" name="quantity" min="1" value="1">
                 <br>
@@ -98,7 +106,7 @@
     <div id="cartModal">
         <h3>購物車</h3>
         <div id="cartItems"></div>
-        <div>總計: $<span id="cartTotal">0.00</span></div>
+        <div>總計: $<span id="cartTotal">0</span></div>
         <button id="checkoutButton" style="display: none;">結帳</button>
     </div>
 

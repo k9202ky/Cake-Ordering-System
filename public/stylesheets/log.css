@@ -129,12 +129,14 @@ footer {
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
     max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    font-family: Arial, sans-serif;
 }
 
 .close {
@@ -145,8 +147,7 @@ footer {
     cursor: pointer;
 }
 
-.close:hover,
-.close:focus {
+.close:hover, .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
@@ -155,28 +156,100 @@ footer {
 #modalImage {
     max-width: 100%;
     height: auto;
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
+
+#modalTitle {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #e75480;
+}
+
+#cakeOrderForm label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#cakeOrderForm select,
+#cakeOrderForm input[type="number"] {
+    width: calc(50% - 5px);
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+#filling-container {
+    margin-bottom: 15px;
+}
+
+#cakeOrderForm button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#cakeOrderForm button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
 
 #cart {
     margin-top: 20px;
     padding: 20px;
     border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .cart-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
 }
 
 .cart-item input {
     width: 50px;
+    text-align: center;
+}
+
+.cart-item button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cart-item button:hover {
+    background-color: #ff1a1a;
 }
 
 .cart-icon {
     position: relative;
     display: inline-block;
     text-decoration: none;
+    color: black;
 }
 
 .cart-icon span {
@@ -199,12 +272,34 @@ footer {
     width: 300px;
     background-color: white;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 #cartItems {
     max-height: 300px;
     overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+#cartTotal {
+    font-weight: bold;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+#checkoutButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+}
+
+#checkoutButton:hover {
+    background-color: #45a049;
 }

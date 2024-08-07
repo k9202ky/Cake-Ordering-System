@@ -3,6 +3,8 @@ function openModal(cakeId, cakeName, cakeImage) {
     const modalTitle = document.getElementById('modalTitle');
     const modalImage = document.getElementById('modalImage');
     const sizeSelect = document.getElementById('size');
+    const fillingContainer = document.getElementById('filling-container'); // 容器元素
+    const fillingSelect = document.getElementById('filling');
 
     modal.style.display = 'block';
     modalTitle.textContent = cakeName;
@@ -23,6 +25,18 @@ function openModal(cakeId, cakeName, cakeImage) {
         if (xlargeOption) {
             sizeSelect.removeChild(xlargeOption);
         }
+    }
+
+    // 添加或移除夾餡選項
+    if (cakeId === 'ice cream cake' || cakeId === 'tiramisu') {
+        fillingContainer.style.display = 'none';
+    } else {
+        fillingContainer.style.display = 'block';
+        fillingSelect.innerHTML = `
+            <option value="fruit_pudding">水果+布丁</option>
+            <option value="taro_pudding">芋頭+布丁</option>
+            <option value="blueberry_pudding">藍莓+布丁</option>
+        `;
     }
 }
 
@@ -46,39 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const cakeId = document.getElementById('modalTitle').dataset.cakeId;
         const cakeName = document.getElementById('modalTitle').textContent;
         const size = document.getElementById('size').value;
+        const fillingContainer = document.getElementById('filling-container');
+        const filling = fillingContainer.style.display === 'none' ? '' : document.getElementById('filling').value;
         const quantity = document.getElementById('quantity').value;
-        const price = getCakePrice(cakeId, size);
-        cart.addItem(cakeId, cakeName, size, quantity, price);
+        cart.addItem(cakeId, cakeName, size, filling, quantity);
         document.getElementById('cakeModal').style.display = 'none';
     });
 });
-
-function getCakePrice(cakeId, size) {
-    const priceList = {
-        'tiramisu': {
-            'small': 500,
-            'medium': 750,
-            'large': 1000
-        },
-        'ice cream cake': {
-            'small': 500,
-            'medium': 750,
-            'large': 1000,
-            'xlarge': 1350
-        },
-        'cream cake': {
-            'small': 500,
-            'medium': 750,
-            'large': 1000,
-            'xlarge': 1350
-        },
-        'chocolate cake': {
-            'small': 500,
-            'medium': 750,
-            'large': 1000,
-            'xlarge': 1350
-        }
-    };
-
-    return priceList[cakeId][size];
-}
