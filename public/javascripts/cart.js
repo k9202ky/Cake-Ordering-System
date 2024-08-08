@@ -143,6 +143,12 @@ class Cart {
             if (e.target.id === 'checkoutButton') {
                 this.handleCheckout();
             }
+
+            //點其他區域購物車關閉
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal && cartModal.style.display === 'block' && !e.target.closest('#cartModal, #cartIcon')) {
+                this.toggleCartView();
+            }
         });
 
         document.addEventListener('change', (e) => {
