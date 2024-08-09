@@ -17,6 +17,7 @@ function login(email, password) {
         if (data.success) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', data.username);
+            localStorage.setItem('phone', data.phone);
             console.log('登入成功，已儲存 token 和 username');
             return data;
         } else {
@@ -45,6 +46,7 @@ function logout() {
         if (data.success) {
             localStorage.removeItem('token');
             localStorage.removeItem('username');
+            localStorage.removeItem('phone');
             console.log('已清除本地存儲');
             showNotification(data.message);
             setTimeout(() => {
@@ -84,9 +86,11 @@ function checkLoginStatus() {
     .then(data => {
         console.log('檢查登入狀態回應:', data);
         if (data.loggedIn) {
+            localStorage.setItem('phone', data.user.phone || 'N/A'); // 同步電話號碼
             updateNavbar(data.user.username);
             cart.updateCartUI();  // 確保購物車界面正確更新
         } else {
+            localStorage.removeItem('phone');
             updateNavbarLoggedOut();
         }
         return data.loggedIn;

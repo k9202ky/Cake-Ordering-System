@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁 - 祥盛中西禮餅</title>
+    <link rel="stylesheet" href="/stylesheets/checkout.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YCNF5QBFN5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YCNF5QBFN5');
+</script>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="/images/logo1.webp" alt="祥盛中西禮餅">
+                <span>祥盛中西禮餅</span>
+            </div>
+            <ul>
+                <li><a href="/">首頁</a></li>
+                <li><a href="/cakes">蛋糕目錄</a></li>
+                <li><a href="/contact">聯絡我們</a></li>
+                <li><a href="/login">登入</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>結帳頁面</h1>
+            <div>
+                <p>訂購人: <span id="username"></span></p>
+                <p>電話: <span id="phone"></span></p>
+            </div>
+
+            <div id="cartItems"></div>
+            <p>總計: $<span id="cartTotal">0</span></p>
+
+            <label for="pickupDate">取貨日期:</label>
+            <input type="date" id="pickupDate" name="pickupDate">
+
+            <label for="pickupTime">取貨時間:</label>
+            <select id="pickupTime" name="pickupTime"></select>
+            <br>
+            <button id="confirmOrderButton">確認訂購</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 祥盛中西禮餅. 版權所有.</p>
+    </footer>
+
+    <script src="/javascripts/cart.js"></script>
+    <script src="/javascripts/auth.js"></script>
+    <script src="/javascripts/cakeModal.js"></script>
+    <script src="/javascripts/checkout.js"></script>
+
+    <!-- 蛋糕詳細信息模態框 -->
+    <div id="cakeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="">
+            <h2 id="modalTitle" data-cake-id=""></h2>
+            <form id="cakeOrderForm">
+                <label for="size">尺寸：</label>
+                <select id="size" name="size">
+                    <option value="small">6吋</option>
+                    <option value="medium">8吋</option>
+                    <option value="large">10吋</option>
+                    <option value="xlarge">12吋</option>
+                </select>
+                <div id="filling-container">
+                    <label for="filling">夾餡：</label>
+                    <select id="filling" name="filling">
+                        <option value="fruit_pudding">水果+布丁</option>
+                        <option value="taro_pudding">芋頭+布丁</option>
+                        <option value="blueberry_pudding">藍莓+布丁</option>
+                    </select>
+                </div>
+                <label for="quantity">數量：</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1">
+                <br>
+                <button type="submit">加入購物車</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="cartModal">
+        <h3>購物車</h3>
+        <div id="cartItems"></div>
+        <div>總計: $<span id="cartTotal">0</span></div>
+        <button id="checkoutButton" style="display: none;">結帳</button>
+      </div>
+
+</body>
+</html>

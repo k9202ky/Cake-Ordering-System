@@ -34,6 +34,11 @@ router.get('/cakes', (req, res) => {
   res.render('cakes', { title: '蛋糕 - 祥盛中西禮餅' });
 });
 
+/* GET checkout page. */
+router.get('/checkout', (req, res) => {
+  res.render('checkout', { title: '確認購買 - 祥盛中西禮餅' });
+});
+
 /* GET forgot-password page. */
 router.get('/forgot-password', (req, res) => {
   res.render('forgot-password', { title: '忘記密碼 - 祥盛中西禮餅' });
