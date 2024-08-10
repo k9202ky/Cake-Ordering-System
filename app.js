@@ -6,6 +6,7 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const { Client, middleware } = require('@line/bot-sdk');
 const cors = require('cors');
 require('dotenv').config(); // 載入環境變數
 
@@ -57,6 +58,53 @@ const connectWithRetry = async (retries = 5) => {
     throw error;
   }
 };
+
+// LINE Bot Config
+const config = {
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_CHANNEL_SECRET
+};
+
+const client = new Client(config);
+
+// 定義 LINE webhook 路由
+app.post('/line-webhook', middleware(config), (req, res) => {
+  req.body.events.forEach((event) => {
+    if (event.type === 'follow') {
+      console.log('New follower User ID:', event.source.userId);
+      // 儲存這個 User ID
+    }
+  });
+  res.sendStatus(200);
+});
+
+// 定義發送 LINE 通知的路由
+app.post('/send-line-notification', (req, res) => {
+  const orderDetails = req.body;
+  let cakeDetails = orderDetails.cartItems.map(item => 
+    `${item.name} (${item.size}, ${item.filling}) x ${item.quantity}`
+  ).join('\n');
+
+  const message = {
+    type: 'text',
+    text: `新訂單通知:
+          訂購人: ${orderDetails.username}
+          電話: ${orderDetails.phone}
+          訂購內容:
+          ${cakeDetails}
+          總金額: $${orderDetails.total}
+          取貨時間: ${orderDetails.pickupDate} ${orderDetails.pickupTime}`
+  };
+
+  client.pushMessage(process.env.LINE_USER_ID, message)
+    .then(() => {
+      res.json({ success: true, message: 'LINE通知已發送' });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ success: false, message: '發送LINE通知時出錯' });
+    });
+});
 
 // 設置視圖引擎
 app.set('views', path.join(__dirname, 'views'));

@@ -85,5 +85,31 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('非常抱歉，目前網頁還在製作中，請直接撥打電話訂購！');
         localStorage.removeItem('cart'); // 清空購物車
         window.location.href = '/'; // 重定向到首頁
+
+        sendLineNotification(orderDetails);
     });
 });
+
+function sendLineNotification(orderDetails) {
+    fetch('/send-line-notification', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: orderDetails.username,
+            phone: orderDetails.phone,
+            cartItems: orderDetails.cartItems, // 確保這裡包含了完整的購物車內容
+            total: orderDetails.total,
+            pickupDate: orderDetails.pickupDate,
+            pickupTime: orderDetails.pickupTime
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('LINE通知發送成功:', data);
+    })
+    .catch(error => {
+        console.error('發送LINE通知時出錯:', error);
+    });
+}
