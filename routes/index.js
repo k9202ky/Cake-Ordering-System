@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
 const { sendEmail } = require('../services/emailService');
+const { Client, middleware } = require('@line/bot-sdk');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 require('dotenv').config();
 
@@ -257,6 +258,39 @@ router.get('/check-token/:token', async (req, res) => {
     console.error('令牌檢查錯誤:', error);
     res.status(500).json({ error: error.message });
   }
+});
+
+// 定義發送 LINE 通知的路由
+const config = {
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_CHANNEL_SECRET
+};
+const client = new Client(config);
+router.post('/send-line-notification', (req, res) => {
+  const orderDetails = req.body;
+  let cakeDetails = orderDetails.cartItems.map(item => 
+    `${item.name} (${item.size} ${item.filling}) x ${item.quantity}`
+  ).join('\n');
+
+  const message = {
+    type: 'text',
+    text: `新訂單通知:
+          訂購人: ${orderDetails.username}
+          電話: ${orderDetails.phone}
+          訂購內容:
+          ${cakeDetails}
+          總金額: $${orderDetails.total}
+          取貨時間: ${orderDetails.pickupDate} ${orderDetails.pickupTime}`
+  };
+
+  client.pushMessage(process.env.LINE_USER_ID, message)
+    .then(() => {
+      res.json({ success: true, message: 'LINE通知已發送' });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ success: false, message: '發送LINE通知時出錯' });
+    });
 });
 
 module.exports = router;

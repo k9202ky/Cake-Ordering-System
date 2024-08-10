@@ -65,8 +65,6 @@ const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET
 };
 
-const client = new Client(config);
-
 // 定義 LINE webhook 路由
 app.post('/line-webhook', middleware(config), (req, res) => {
   req.body.events.forEach((event) => {
@@ -76,34 +74,6 @@ app.post('/line-webhook', middleware(config), (req, res) => {
     }
   });
   res.sendStatus(200);
-});
-
-// 定義發送 LINE 通知的路由
-app.post('/send-line-notification', (req, res) => {
-  const orderDetails = req.body;
-  let cakeDetails = orderDetails.cartItems.map(item => 
-    `${item.name} (${item.size}, ${item.filling}) x ${item.quantity}`
-  ).join('\n');
-
-  const message = {
-    type: 'text',
-    text: `新訂單通知:
-          訂購人: ${orderDetails.username}
-          電話: ${orderDetails.phone}
-          訂購內容:
-          ${cakeDetails}
-          總金額: $${orderDetails.total}
-          取貨時間: ${orderDetails.pickupDate} ${orderDetails.pickupTime}`
-  };
-
-  client.pushMessage(process.env.LINE_USER_ID, message)
-    .then(() => {
-      res.json({ success: true, message: 'LINE通知已發送' });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({ success: false, message: '發送LINE通知時出錯' });
-    });
 });
 
 // 設置視圖引擎
