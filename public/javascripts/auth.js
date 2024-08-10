@@ -1,7 +1,7 @@
 // 登入函數
 function login(email, password) {
     console.log('嘗試登入:', email);
-    return fetch('http://127.0.0.1:3000/login', {
+    return fetch('https://www.creamlady.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -34,7 +34,7 @@ function login(email, password) {
 function logout() {
     console.log('嘗試登出');
     const token = localStorage.getItem('token');
-    return fetch('http://127.0.0.1:3000/logout', {
+    return fetch('https://www.creamlady.com/logout', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -72,7 +72,7 @@ function checkLoginStatus() {
         return Promise.resolve(false);
     }
 
-    return fetch('http://127.0.0.1:3000/current-user', {
+    return fetch('https://www.creamlady.com/current-user', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
