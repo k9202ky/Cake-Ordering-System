@@ -3,27 +3,27 @@ class Cart {
         this.items = JSON.parse(localStorage.getItem('cart')) || [];
         this.priceList = {
             'tiramisu': {
-                'small': 500,
-                'medium': 750,
-                'large': 1000
+                'small': 450,
+                'medium': 675,
+                'large': 900
             },
             'ice cream cake': {
-                'small': 600,
-                'medium': 850,
-                'large': 1100,
-                'xlarge': 1350
+                'small': 540,
+                'medium': 765,
+                'large': 990,
+                'xlarge': 1215
             },
             'cream cake': {
-                'small': 500,
-                'medium': 750,
-                'large': 1000,
-                'xlarge': 1350
+                'small': 450,
+                'medium': 675,
+                'large': 900,
+                'xlarge': 1215
             },
             'chocolate cake': {
-                'small': 500,
-                'medium': 750,
-                'large': 1000,
-                'xlarge': 1350
+                'small': 450,
+                'medium': 675,
+                'large': 900,
+                'xlarge': 1215
             }
             // 可以繼續添加更多蛋糕種類和尺寸
         };

@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pickupDateInput.min = today.toISOString().split('T')[0];
 
     // 設置取貨時間
-    for (let hour = 8; hour <= 21; hour++) {
+    for (let hour = 9; hour <= 21; hour++) {
         pickupTimeInput.appendChild(createOption(`${hour}:00`));
         pickupTimeInput.appendChild(createOption(`${hour}:30`));
     }
