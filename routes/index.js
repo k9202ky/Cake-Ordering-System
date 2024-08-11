@@ -265,11 +265,32 @@ const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET
 };
+
 const client = new Client(config);
+
+function getDisplaySize(size) {
+  const sizeMap = {
+      small: '6吋',
+      medium: '8吋',
+      large: '10吋',
+      xlarge: '12吋'
+  };
+  return sizeMap[size] || size;
+}
+
+function getDisplayFilling(filling) {
+  const fillingMap = {
+      fruit_pudding: '水果+布丁',
+      taro_pudding: '芋頭+布丁',
+      blueberry_pudding: '藍莓+布丁'
+  };
+  return fillingMap[filling] || filling;
+}
+
 router.post('/send-line-notification', (req, res) => {
   const orderDetails = req.body;
   let cakeDetails = orderDetails.cartItems.map(item => 
-    `${item.name} (${item.size} ${item.filling}) x ${item.quantity}`
+    `${item.name} (${getDisplaySize(item.size)} ${getDisplayFilling(item.filling)}) x ${item.quantity}`
   ).join('\n');
 
   const message = {
