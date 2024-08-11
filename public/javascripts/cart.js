@@ -24,6 +24,10 @@ class Cart {
                 'medium': 675,
                 'large': 900,
                 'xlarge': 1215
+            },
+            'love cake': {
+                'medium': 765,
+                'large': 990
             }
             // 可以繼續添加更多蛋糕種類和尺寸
         };

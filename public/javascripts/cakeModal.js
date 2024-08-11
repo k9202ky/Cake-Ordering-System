@@ -27,6 +27,17 @@ function openModal(cakeId, cakeName, cakeImage) {
         }
     }
 
+    if (cakeId === 'love cake') {
+        const xlargeOption = sizeSelect.querySelector('option[value="xlarge"]');
+        const smallOption = sizeSelect.querySelector('option[value="small"]');
+        if (xlargeOption) {
+            sizeSelect.removeChild(xlargeOption);
+        }
+        if (smallOption) {
+            sizeSelect.removeChild(smallOption);
+        }
+    }
+
     // 添加或移除夾餡選項
     if (cakeId === 'ice cream cake' || cakeId === 'tiramisu') {
         fillingContainer.style.display = 'none';
