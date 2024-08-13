@@ -28,8 +28,8 @@ const connectToDatabase = async () => {
 
   try {
     const db = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 6000,
-      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 60000,
       bufferCommands: true,
     });
 
@@ -43,7 +43,7 @@ const connectToDatabase = async () => {
 };
 
 // 帶有重試機制的資料庫連接函數
-const connectWithRetry = async (retries = 5) => {
+const connectWithRetry = async (retries = 10) => {
   try {
     await connectToDatabase();
     if (mongoose.connection.readyState !== 1) {
