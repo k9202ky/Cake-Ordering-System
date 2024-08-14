@@ -182,6 +182,23 @@ function updateNavbarLoggedOut() {
 
 // DOM 加載完成後執行
 document.addEventListener('DOMContentLoaded', () => {
+
+    const orderButton = document.getElementById('orderButton');
+
+    if (orderButton) {
+        orderButton.addEventListener('click', function() {
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                // 用戶已登入，跳轉到蛋糕頁面
+                window.location.href = '/cakes';
+            } else {
+                // 用戶未登入，跳轉到登入頁面
+                window.location.href = '/login';
+            }
+        });
+    }
+
     checkLoginStatus().then(loggedIn => {
         cart.updateCartUI();  // 確保購物車界面正確更新
     });

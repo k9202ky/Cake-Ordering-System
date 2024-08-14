@@ -86,6 +86,14 @@ h2{
     text-decoration: none;
     border-radius: 5px;
     margin-top: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.cta-button:hover {
+    background-color: #d64d73;
 }
 
 #featured-cakes {

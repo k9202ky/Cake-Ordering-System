@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.href = '/'; // 登入成功後重定向到首頁
             })
             .catch(error => {
-                alert('登入失敗：' + error.message);
+                alert('登入失敗：電子信箱或密碼錯誤');
             });
     });
 });
