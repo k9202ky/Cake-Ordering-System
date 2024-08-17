@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
 const { sendEmail } = require('../services/emailService');
-const { Client, middleware } = require('@line/bot-sdk');
+const { Client } = require('@line/bot-sdk');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 require('dotenv').config();
 
@@ -304,9 +304,11 @@ router.post('/send-line-notification', (req, res) => {
           取貨時間: ${orderDetails.pickupDate} ${orderDetails.pickupTime}`
   };
 
-  client.pushMessage(process.env.LINE_USER_ID, message)
+  const userIds = [process.env.LINE_USER_ID, process.env.LINE_USER_ID_2];
+
+  Promise.all(userIds.map(userId => client.pushMessage(userId, message)))
     .then(() => {
-      res.json({ success: true, message: 'LINE通知已發送' });
+      res.json({ success: true, message: 'LINE通知已發送給所有使用者' });
     })
     .catch((err) => {
       console.error(err);

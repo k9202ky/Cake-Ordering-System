@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('訂單確認:', orderDetails);
         sendLineNotification(orderDetails);
-        alert('非常抱歉，目前網頁還在製作中，請直接撥打電話訂購！');
+        alert('訂購成功!請在取貨時間到店領取並付款，感謝您的訂購！');
         localStorage.removeItem('cart');
         window.location.href = '/';
     });

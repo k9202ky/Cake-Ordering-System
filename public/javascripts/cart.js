@@ -28,6 +28,12 @@ class Cart {
             'love cake': {
                 'medium': 765,
                 'large': 990
+            },
+            'mongo_cake': {
+                'small': 550,
+                'medium': 820,
+                'large': 1100,
+                
             }
             // 可以繼續添加更多蛋糕種類和尺寸
         };

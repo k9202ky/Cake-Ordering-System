@@ -26,6 +26,12 @@ function openModal(cakeId, cakeName, cakeImage) {
             sizeSelect.removeChild(xlargeOption);
         }
     }
+    if (cakeId === 'mongo_cake') {
+        const xlargeOption = sizeSelect.querySelector('option[value="xlarge"]');
+        if (xlargeOption) {
+            sizeSelect.removeChild(xlargeOption);
+        }
+    }
 
     if (cakeId === 'love cake') {
         const xlargeOption = sizeSelect.querySelector('option[value="xlarge"]');
