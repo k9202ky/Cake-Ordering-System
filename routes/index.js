@@ -7,50 +7,52 @@ const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
 const { sendEmail } = require('../services/emailService');
 const { Client } = require('@line/bot-sdk');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 require('dotenv').config();
 
-/* GET home page. */
+// 設置 SendGrid API 密鑰
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// LINE Bot 設定
+const config = {
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_CHANNEL_SECRET
+};
+const client = new Client(config);
+
+// 頁面路由
 router.get('/', (req, res) => {
   res.render('index', { title: '祥盛中西禮餅' });
 });
 
-/* GET login page. */
 router.get('/login', (req, res) => {
   res.render('login', { title: '登入 - 祥盛中西禮餅' });
 });
 
-/* GET register page. */
 router.get('/register', (req, res) => {
   res.render('register', { title: '註冊 - 祥盛中西禮餅' });
 });
 
-/* GET contact page. */
 router.get('/contact', (req, res) => {
   res.render('contact', { title: '聯絡我們 - 祥盛中西禮餅' });
 });
 
-/* GET cakes page. */
 router.get('/cakes', (req, res) => {
   res.render('cakes', { title: '蛋糕 - 祥盛中西禮餅' });
 });
 
-/* GET checkout page. */
 router.get('/checkout', (req, res) => {
   res.render('checkout', { title: '確認購買 - 祥盛中西禮餅' });
 });
 
-/* GET forgot-password page. */
 router.get('/forgot-password', (req, res) => {
   res.render('forgot-password', { title: '忘記密碼 - 祥盛中西禮餅' });
 });
 
-/* GET reset-password page. */
 router.get('/reset-password', (req, res) => {
   res.render('reset-password', { title: '重設密碼 - 祥盛中西禮餅' });
 });
 
-/* POST login user. */
+// 用戶認證相關路由
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -58,7 +60,6 @@ router.post('/login', async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ success: false, message: '電子郵件或密碼錯誤' });
     }
-    // 創建 JWT
     const token = jwt.sign(
       { userId: user._id, username: user.username },
       process.env.JWT_SECRET,
@@ -76,13 +77,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 登出路由
 router.post('/logout', (req, res) => {
-  // 對於 JWT，客戶端應該自行清除 token
   res.json({ success: true, message: '成功登出' });
 });
 
-// 中間件：驗證 JWT
+// JWT 驗證中間件
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -96,7 +95,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// 獲取當前用戶資訊的路由
 router.get('/current-user', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
@@ -111,11 +109,9 @@ router.get('/current-user', authenticateToken, async (req, res) => {
   }
 });
 
-
-/* POST /forgot-password */
+// 忘記密碼和重設密碼相關路由
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-
   try {
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
@@ -123,30 +119,12 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ message: '找不到該電子郵件地址的用戶' });
     }
 
-    // 生成重設令牌
     const resetToken = crypto.randomBytes(20).toString('hex');
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = Date.now() + 3600000; // 1 小時後過期
 
     await user.save();
 
-    console.log('用戶保存後:', {
-      id: user._id,
-      email: user.email,
-      resetPasswordToken: user.resetPasswordToken,
-      resetPasswordExpires: user.resetPasswordExpires
-    });
-
-    // 再次檢查用戶是否正確保存
-    const checkUser = await User.findOne({ email: user.email });
-    console.log('再次檢查用戶:', {
-      id: checkUser._id,
-      email: checkUser.email,
-      resetPasswordToken: checkUser.resetPasswordToken,
-      resetPasswordExpires: checkUser.resetPasswordExpires
-    });
-
-    // 發送重設密碼郵件
     const resetUrl = `https://creamlady.com/reset-password/${resetToken}`;
     await sendEmail(
       user.email,
@@ -162,22 +140,12 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-/* GET /reset-password/:token */
 router.get('/reset-password/:token', async (req, res) => {
   try {
-    console.log('收到的令牌:', req.params.token);
-
     const user = await User.findOne({
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() }
     });
-
-    console.log('找到的用戶:', user ? {
-      id: user._id,
-      email: user.email,
-      resetPasswordToken: user.resetPasswordToken,
-      resetPasswordExpires: user.resetPasswordExpires
-    } : null);
 
     if (!user) {
       console.log('令牌無效或已過期');
@@ -191,35 +159,23 @@ router.get('/reset-password/:token', async (req, res) => {
   }
 });
 
-/* POST reset-password/:token */
 router.post('/reset-password/:token', async (req, res) => {
-  console.log('接收到重設密碼請求，令牌:', req.params.token);
-  
   try {
     const user = await User.findOne({
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    console.log('找到的用戶:', user ? {
-      id: user._id,
-      email: user.email,
-      resetPasswordTokenExists: !!user.resetPasswordToken,
-      resetPasswordExpires: user.resetPasswordExpires
-    } : null);
-
     if (!user) {
       console.log('密碼重設令牌無效或已過期');
       return res.status(400).json({ message: '密碼重設令牌無效或已過期' });
     }
 
-    // 驗證新密碼
     if (!req.body.password) {
       console.log('新密碼未提供');
       return res.status(400).json({ message: '請提供新密碼' });
     }
 
-    // 設置新密碼
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     user.password = hashedPassword;
     user.resetPasswordToken = undefined;
@@ -236,22 +192,12 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
-/* GET /check-token/:token */
 router.get('/check-token/:token', async (req, res) => {
   try {
-    console.log('檢查令牌:', req.params.token);
-
     const user = await User.findOne({
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() }
     });
-
-    console.log('令牌檢查時找到的用戶:', user ? {
-      id: user._id,
-      email: user.email,
-      resetPasswordToken: user.resetPasswordToken,
-      resetPasswordExpires: user.resetPasswordExpires
-    } : null);
 
     res.json({ valid: !!user });
   } catch (error) {
@@ -260,29 +206,22 @@ router.get('/check-token/:token', async (req, res) => {
   }
 });
 
-// 定義發送 LINE 通知的路由
-const config = {
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
-  channelSecret: process.env.LINE_CHANNEL_SECRET
-};
-
-const client = new Client(config);
-
+// LINE 通知相關函數和路由
 function getDisplaySize(size) {
   const sizeMap = {
-      small: '6吋',
-      medium: '8吋',
-      large: '10吋',
-      xlarge: '12吋'
+    small: '6吋',
+    medium: '8吋',
+    large: '10吋',
+    xlarge: '12吋'
   };
   return sizeMap[size] || size;
 }
 
 function getDisplayFilling(filling) {
   const fillingMap = {
-      fruit_pudding: '水果+布丁',
-      taro_pudding: '芋頭+布丁',
-      blueberry_pudding: '藍莓+布丁'
+    fruit_pudding: '水果+布丁',
+    taro_pudding: '芋頭+布丁',
+    blueberry_pudding: '藍莓+布丁'
   };
   return fillingMap[filling] || filling;
 }

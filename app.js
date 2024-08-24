@@ -1,3 +1,4 @@
+// 引入必要的模組
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -14,7 +15,7 @@ require('dotenv').config(); // 載入環境變數
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
-// 創建 Express 應用
+// 創建 Express 應用實例
 const app = express();
 
 // 資料庫連接緩存
@@ -22,11 +23,13 @@ let cachedDb = null;
 
 // 資料庫連接函數
 const connectToDatabase = async () => {
+  // 如果已經有連接，直接返回
   if (cachedDb && mongoose.connection.readyState === 1) {
     return cachedDb;
   }
 
   try {
+    // 嘗試建立新的連接
     const db = await mongoose.connect(process.env.MONGODB_URI, {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 60000,
@@ -59,34 +62,25 @@ const connectWithRetry = async (retries = 10) => {
   }
 };
 
-// LINE Bot Config
+// LINE Bot 設定
 const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET
 };
 
-// 定義 LINE webhook 路由
-app.post('/line-webhook', middleware(config), (req, res) => {
-  req.body.events.forEach((event) => {
-    if (event.type === 'follow') {
-      console.log('New follower User ID:', event.source.userId);
-      // 儲存這個 User ID
-    }
-  });
-  res.sendStatus(200);
-});
-
 // 設置視圖引擎
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// 中間件設置
+// 設置中間件
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname)));
+
+// 處理 webmanifest 文件的中間件
 app.use((req, res, next) => {
   if (req.url === '/site.webmanifest') {
     res.setHeader('Content-Type', 'application/manifest+json');
@@ -94,13 +88,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS 設置
+// 設置 CORS
 app.use(cors({
   origin: ['https://www.creamlady.com', 'https://creamlady.com'],
   credentials: true
 }));
 
-// Session 設置
+// 設置 session
 app.use(session({
   secret: process.env.SECRET_KEY,
   resave: false,
@@ -112,13 +106,24 @@ app.use(session({
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 } // 24 小時
 }));
 
+// LINE webhook 路由
+app.post('/line-webhook', middleware(config), (req, res) => {
+  req.body.events.forEach((event) => {
+    if (event.type === 'follow') {
+      console.log('New follower User ID:', event.source.userId);
+      // 這裡可以添加儲存用戶 ID 的邏輯
+    }
+  });
+  res.sendStatus(200);
+});
+
 // robots.txt 路由
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
   res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
 });
 
-// keep-warm 路由
+// keep-warm 路由，用於保持應用和資料庫連接
 app.get('/keep-warm', async (req, res) => {
   console.log('保持應用溫暖:', new Date().toISOString());
   try {
@@ -150,7 +155,7 @@ app.use(async (req, res, next) => {
   }
 });
 
-// 路由設置
+// 設置路由
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
