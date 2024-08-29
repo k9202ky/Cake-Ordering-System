@@ -5,7 +5,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const { Client, middleware } = require('@line/bot-sdk');
 const cors = require('cors');
@@ -92,18 +91,6 @@ app.use((req, res, next) => {
 app.use(cors({
   origin: ['https://www.creamlady.com', 'https://creamlady.com'],
   credentials: true
-}));
-
-// 設置 session
-app.use(session({
-  secret: process.env.SECRET_KEY,
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
-    ttl: 24 * 60 * 60 // 1 天
-  }),
-  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 } // 24 小時
 }));
 
 // LINE webhook 路由
