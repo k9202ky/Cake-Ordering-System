@@ -4,11 +4,15 @@ body {
     padding: 0;
     line-height: 1.6;
     background-color: #cda581;
+    padding-top: 80px
 }
 
 header {
     background-color: #f8e0e0;
     padding: 1rem 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
 }
 
 nav {
@@ -62,6 +66,7 @@ main {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    padding-top: 80px;
 }
 
 #home {
