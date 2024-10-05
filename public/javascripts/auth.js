@@ -135,7 +135,6 @@ function updateNavbar(username) {
         <li><a href="/">首頁</a></li>
         <li><a href="/cakes">蛋糕目錄</a></li>
         <li><a href="/contact">聯絡我們</a></li>
-        <li>您好：${username}</li>
         <li>
             <a href="#" id="cartIcon" class="cart-icon">
                 🛒 <span id="cartCount">0</span>
