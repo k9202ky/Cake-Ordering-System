@@ -95,13 +95,23 @@ app.use(cors({
 
 // LINE webhook 路由
 app.post('/line-webhook', middleware(config), (req, res) => {
-  req.body.events.forEach((event) => {
-    if (event.type === 'follow') {
-      console.log('New follower User ID:', event.source.userId);
-      // 這裡可以添加儲存用戶 ID 的邏輯
+  try {
+    if (!req.body || !req.body.events) {
+      console.error("LINE Webhook 沒有接收到 events");
+      return res.sendStatus(400); // Bad Request
     }
-  });
-  res.sendStatus(200);
+
+    req.body.events.forEach((event) => {
+      if (event.type === 'follow') {
+        console.log('New follower User ID:', event.source.userId);
+      }
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Webhook 處理錯誤:", error);
+    res.sendStatus(500);
+  }
 });
 
 // robots.txt 路由
